@@ -1,0 +1,6 @@
+{
+  "name": "Reshare Cleaner",
+  "description": "Intelligently clean social media reshares from your gallery using AI analysis, swipes, and automated intent-based cleanup filters.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
