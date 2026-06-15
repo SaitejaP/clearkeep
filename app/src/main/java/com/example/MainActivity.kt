@@ -79,8 +79,8 @@ fun MainAppContainer(viewModel: AppViewModel) {
                 NavigationBarItem(
                     selected = currentTab == 3,
                     onClick = { viewModel.setTab(3) },
-                    icon = { Icon(imageVector = Icons.Default.Settings, contentDescription = "Adapt Insights") },
-                    label = { Text("AI Insight") }
+                    icon = { Icon(imageVector = Icons.Default.Settings, contentDescription = "Settings & AI Engine") },
+                    label = { Text("Settings") }
                 )
             }
         }

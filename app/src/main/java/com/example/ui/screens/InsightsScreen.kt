@@ -4,6 +4,7 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,6 +15,8 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -23,12 +26,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.viewmodel.AppViewModel
 import com.example.ui.viewmodel.Recommendation
+import com.example.ui.viewmodel.AiEngineMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,7 +78,7 @@ fun InsightsScreen(
                                 letterSpacing = (-0.5).sp
                             )
                             Text(
-                                text = "INSIGHTS PROFILE",
+                                text = "SETTINGS & INSIGHTS",
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -96,6 +101,202 @@ fun InsightsScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // 🛡️ AI Model Settings Panel with Pros/Cons
+            item {
+                val aiEngineMode by viewModel.aiEngineMode.collectAsState()
+                
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                    ),
+                    shape = RoundedCornerShape(24.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                ) {
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Text(
+                            text = "⚙️ AI Classification Engine",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Choose which intelligence model filters your gallery.",
+                            fontSize = 11.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        
+                        Spacer(modifier = Modifier.height(14.dp))
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            // On-Device (Nano) Option
+                            Card(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable { if (aiEngineMode != AiEngineMode.NANO_ON_DEVICE) viewModel.toggleAIEngineMode() }
+                                    .testTag("ai_engine_nano"),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = if (aiEngineMode == AiEngineMode.NANO_ON_DEVICE) {
+                                        MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f)
+                                    } else {
+                                        MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                                    }
+                                ),
+                                border = BorderStroke(
+                                    width = if (aiEngineMode == AiEngineMode.NANO_ON_DEVICE) 2.dp else 1.dp,
+                                    color = if (aiEngineMode == AiEngineMode.NANO_ON_DEVICE) {
+                                        MaterialTheme.colorScheme.tertiary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                                    }
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(12.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text("🛡️", fontSize = 24.sp)
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = "On-Device",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 13.sp,
+                                        color = if (aiEngineMode == AiEngineMode.NANO_ON_DEVICE) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = "Gemini Nano",
+                                        fontSize = 10.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+
+                            // Cloud (Flash) Option
+                            Card(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable { if (aiEngineMode != AiEngineMode.FLASH_CLOUD) viewModel.toggleAIEngineMode() }
+                                    .testTag("ai_engine_flash"),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = if (aiEngineMode == AiEngineMode.FLASH_CLOUD) {
+                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                                    } else {
+                                        MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                                    }
+                                ),
+                                border = BorderStroke(
+                                    width = if (aiEngineMode == AiEngineMode.FLASH_CLOUD) 2.dp else 1.dp,
+                                    color = if (aiEngineMode == AiEngineMode.FLASH_CLOUD) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                                    }
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(12.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text("🌐", fontSize = 24.sp)
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = "Cloud Core",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 13.sp,
+                                        color = if (aiEngineMode == AiEngineMode.FLASH_CLOUD) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = "Gemini Flash",
+                                        fontSize = 10.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.08f))
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Pros and Cons text depending on mode
+                        if (aiEngineMode == AiEngineMode.NANO_ON_DEVICE) {
+                            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                Text(
+                                    text = "🛡️ On-Device Gemini Nano Properties:",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text("✅", fontSize = 11.sp, modifier = Modifier.padding(top = 1.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Column {
+                                        Text("Absolute User Privacy", fontWeight = FontWeight.Bold, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface)
+                                        Text("Images are analyzed directly on your device chip. 0KB is ever uploaded.", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                }
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text("✅", fontSize = 11.sp, modifier = Modifier.padding(top = 1.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Column {
+                                        Text("Network Independent", fontWeight = FontWeight.Bold, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface)
+                                        Text("Continuously filters reshares on flights, offline areas, or weak connections.", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                }
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text("❌", fontSize = 11.sp, modifier = Modifier.padding(top = 1.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Column {
+                                        Text("Lighter Context Comprehension", fontWeight = FontWeight.Bold, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface)
+                                        Text("Compressed local weights may occasionally overlook complex pictorial jokes or hidden visual clues.", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                }
+                            }
+                        } else {
+                            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                Text(
+                                    text = "🌐 Cloud Gemini 3.5 Flash Properties:",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text("✅", fontSize = 11.sp, modifier = Modifier.padding(top = 1.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Column {
+                                        Text("Advanced Semantic Intelligence", fontWeight = FontWeight.Bold, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface)
+                                        Text("Full-scale deep neural reasoning guarantees higher recall and scene understanding.", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                }
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text("❌", fontSize = 11.sp, modifier = Modifier.padding(top = 1.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Column {
+                                        Text("Cloud Offloading & Signatures Transfer", fontWeight = FontWeight.Bold, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface)
+                                        Text("Requires secure network packets to transmit file metadata and structural indicators to external Cloud Core servers.", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                }
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text("❌", fontSize = 11.sp, modifier = Modifier.padding(top = 1.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Column {
+                                        Text("Cellular & Internet Required", fontWeight = FontWeight.Bold, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface)
+                                        Text("Analyzers will skip items if there is no stable internet or network bandwidth available.", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // Profile card showing learned state
             item {
                 Box(
